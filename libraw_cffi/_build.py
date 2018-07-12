@@ -20,7 +20,6 @@ ffi.cdef(
     typedef struct { ...; } libraw_iparams_t;
     typedef struct { ...; } libraw_lensinfo_t;
     typedef struct { ...; } libraw_makernotes_t;
-    typedef struct { ...; } libraw_raw_crop_t;
     typedef struct { ...; } libraw_rawdata_t;
     typedef struct { ...; } libraw_shootinginfo_t;
     typedef struct { ...; } libraw_thumbnail_t;
