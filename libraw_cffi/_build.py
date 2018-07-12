@@ -105,6 +105,7 @@ ffi.cdef(
     } libraw_data_t;
 
     libraw_data_t *libraw_init(unsigned int flags);
+    int libraw_open_file(libraw_data_t*, const char *);
     """,
 )
 
