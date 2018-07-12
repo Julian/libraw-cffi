@@ -14,10 +14,27 @@ ffi.cdef(
     """
     typedef unsigned short ushort;
 
+    typedef struct
+        {
+        char	    guard[4];
+        char        make[64];
+        char        model[64];
+        char        software[64];
+        unsigned    raw_count;
+        unsigned    dng_version;
+        unsigned    is_foveon;
+        int         colors;
+        unsigned    filters;
+        char        xtrans[6][6];
+        char        xtrans_abs[6][6];
+        char        cdesc[5];
+        unsigned    xmplen;
+        char        *xmpdata;
+    } libraw_iparams_t;
+
     typedef struct { ...; } libraw_colordata_t;
     typedef struct { ...; } libraw_image_sizes_t;
     typedef struct { ...; } libraw_imgother_t;
-    typedef struct { ...; } libraw_iparams_t;
     typedef struct { ...; } libraw_lensinfo_t;
     typedef struct { ...; } libraw_makernotes_t;
     typedef struct { ...; } libraw_rawdata_t;
