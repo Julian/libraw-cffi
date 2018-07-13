@@ -36,7 +36,6 @@ ffi.cdef(
     typedef struct { ...; } libraw_imgother_t;
     typedef struct { ...; } libraw_lensinfo_t;
     typedef struct { ...; } libraw_makernotes_t;
-    typedef struct { ...; } libraw_rawdata_t;
     typedef struct { ...; } libraw_shootinginfo_t;
     typedef struct { ...; } libraw_thumbnail_t;
 
@@ -117,6 +116,33 @@ ffi.cdef(
         /* Custom camera list */
         char **custom_camera_strings;
     } libraw_output_params_t;
+
+    typedef struct
+    {
+        /* really allocated bitmap */
+        void *raw_alloc;
+        /* alias to single_channel variant */
+        ushort *raw_image;
+        /* alias to 4-channel variant */
+        ushort (*color4_image)[4];
+        /* alias to 3-color variand decoded by RawSpeed */
+        ushort (*color3_image)[3];
+        /* float bayer */
+        float *float_image;
+        /* float 3-component */
+        float (*float3_image)[3];
+        /* float 4-component */
+        float (*float4_image)[4];
+
+        /* Phase One black level data; */
+        short (*ph1_cblack)[2];
+        short (*ph1_rblack)[2];
+        /* save color and sizes here, too.... */
+        libraw_iparams_t iparams;
+        libraw_image_sizes_t sizes;
+        libraw_colordata_t color;
+        ...;
+    } libraw_rawdata_t;
 
     typedef struct
     {
