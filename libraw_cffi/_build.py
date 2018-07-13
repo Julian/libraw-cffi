@@ -33,13 +33,28 @@ ffi.cdef(
     } libraw_iparams_t;
 
     typedef struct { ...; } libraw_colordata_t;
-    typedef struct { ...; } libraw_image_sizes_t;
     typedef struct { ...; } libraw_imgother_t;
     typedef struct { ...; } libraw_lensinfo_t;
     typedef struct { ...; } libraw_makernotes_t;
     typedef struct { ...; } libraw_rawdata_t;
     typedef struct { ...; } libraw_shootinginfo_t;
     typedef struct { ...; } libraw_thumbnail_t;
+
+    typedef struct
+    {
+        ushort cleft, ctop, cwidth, cheight;
+    } libraw_raw_crop_t;
+
+    typedef struct
+    {
+        ushort raw_height, raw_width, height, width, top_margin, left_margin;
+        ushort iheight, iwidth;
+        unsigned raw_pitch;
+        double pixel_aspect;
+        int flip;
+        int mask[8][4];
+        libraw_raw_crop_t raw_crop;
+    } libraw_image_sizes_t;
 
     typedef struct
     {
