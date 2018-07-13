@@ -137,7 +137,10 @@ ffi.cdef(
     } libraw_data_t;
 
     libraw_data_t *libraw_init(unsigned int flags);
-    int libraw_open_file(libraw_data_t*, const char *);
+    int libraw_open_file(libraw_data_t *, const char *);
+    int libraw_unpack(libraw_data_t *);
+    void libraw_recycle(libraw_data_t *);
+    int libraw_raw2image(libraw_data_t *);
     """,
 )
 
