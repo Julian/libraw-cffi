@@ -6,13 +6,18 @@ ffi = FFI()
 
 ffi.set_source(
     "_raw",
-    '#include "libraw/libraw.h"',
+    """
+    #include "libraw/libraw.h"
+    """,
     libraries=["raw"],
 )
 
 ffi.cdef(
     """
-    typedef unsigned short ushort;
+    typedef int... time_t;
+
+    typedef char... uchar;
+    typedef int... ushort;
 
     typedef struct
         {
@@ -32,12 +37,43 @@ ffi.cdef(
         char        *xmpdata;
     } libraw_iparams_t;
 
-    typedef struct { ...; } libraw_colordata_t;
-    typedef struct { ...; } libraw_imgother_t;
-    typedef struct { ...; } libraw_lensinfo_t;
-    typedef struct { ...; } libraw_makernotes_t;
-    typedef struct { ...; } libraw_shootinginfo_t;
-    typedef struct { ...; } libraw_thumbnail_t;
+    typedef struct
+    {
+        float latitude[3];     /* Deg,min,sec */
+        float longtitude[3];   /* Deg,min,sec */
+        float gpstimestamp[3]; /* Deg,min,sec */
+        float altitude;
+        char altref, latref, longref, gpsstatus;
+        char gpsparsed;
+    } libraw_gps_info_t;
+
+    typedef struct
+    {
+        float iso_speed;
+        float shutter;
+        float aperture;
+        float focal_len;
+        time_t timestamp;
+        unsigned shot_order;
+        unsigned gpsdata[32];
+        libraw_gps_info_t parsed_gps;
+        char desc[512], artist[64];
+        float FlashEC;
+        float FlashGN;
+        float CameraTemperature;
+        float SensorTemperature;
+        float SensorTemperature2;
+        float LensTemperature;
+        float AmbientTemperature;
+        float BatteryTemperature;
+        float exifAmbientTemperature;
+        float exifHumidity;
+        float exifPressure;
+        float exifWaterDepth;
+        float exifAcceleration;
+        float exifCameraElevationAngle;
+        float real_ISO;
+    } libraw_imgother_t;
 
     typedef struct
     {
@@ -54,6 +90,13 @@ ffi.cdef(
         int mask[8][4];
         libraw_raw_crop_t raw_crop;
     } libraw_image_sizes_t;
+
+    struct ph1_t
+    {
+        int format, key_off, tag_21a;
+        int t_black, split_col, black_col, split_row, black_row;
+        float tag_210;
+    };
 
     typedef struct
     {
@@ -119,6 +162,382 @@ ffi.cdef(
 
     typedef struct
     {
+        unsigned long long LensID;
+        char Lens[128];
+        ushort LensFormat; /* to characterize the image circle the lens covers */
+        ushort LensMount;  /* 'male', lens itself */
+        unsigned long long CamID;
+        ushort CameraFormat; /* some of the sensor formats */
+        ushort CameraMount;  /* 'female', body throat */
+        char body[64];
+        short FocalType; /* -1/0 is unknown; 1 is fixed focal; 2 is zoom */
+        char LensFeatures_pre[16], LensFeatures_suf[16];
+        float MinFocal, MaxFocal;
+        float MaxAp4MinFocal, MaxAp4MaxFocal, MinAp4MinFocal, MinAp4MaxFocal;
+        float MaxAp, MinAp;
+        float CurFocal, CurAp;
+        float MaxAp4CurFocal, MinAp4CurFocal;
+        float MinFocusDistance;
+        float FocusRangeIndex;
+        float LensFStops;
+        unsigned long long TeleconverterID;
+        char Teleconverter[128];
+        unsigned long long AdapterID;
+        char Adapter[128];
+        unsigned long long AttachmentID;
+        char Attachment[128];
+        ushort CanonFocalUnits;
+        float FocalLengthIn35mmFormat;
+    } libraw_makernotes_lens_t;
+
+    typedef struct
+    {
+        short DriveMode;
+        short FocusMode;
+        short MeteringMode;
+        short AFPoint;
+        short ExposureMode;
+        short ImageStabilization;
+        char BodySerial[64];
+        char InternalBodySerial[64]; /* this may be PCB or sensor serial, depends on make/model*/
+    } libraw_shootinginfo_t;
+
+    typedef struct
+    {
+        float NikonEffectiveMaxAp;
+        uchar NikonLensIDNumber, NikonLensFStops, NikonMCUVersion, NikonLensType;
+    } libraw_nikonlens_t;
+
+    typedef struct
+    {
+        float MinFocal, MaxFocal, MaxAp4MinFocal, MaxAp4MaxFocal;
+    } libraw_dnglens_t;
+
+    typedef struct
+    {
+        float MinFocal, MaxFocal, MaxAp4MinFocal, MaxAp4MaxFocal, EXIF_MaxAp;
+        char LensMake[128], Lens[128], LensSerial[128], InternalLensSerial[128];
+        ushort FocalLengthIn35mmFormat;
+        libraw_nikonlens_t nikon;
+        libraw_dnglens_t dng;
+        libraw_makernotes_lens_t makernotes;
+    } libraw_lensinfo_t;
+
+    typedef struct
+    {
+        int CanonColorDataVer;
+        int CanonColorDataSubVer;
+        int SpecularWhiteLevel;
+        int NormalWhiteLevel;
+        int ChannelBlackLevel[4];
+        int AverageBlackLevel;
+        /* multishot */
+        unsigned int multishot[4];
+        /* metering */
+        short MeteringMode;
+        short SpotMeteringMode;
+        uchar FlashMeteringMode;
+        short FlashExposureLock;
+        short ExposureMode;
+        short AESetting;
+        uchar HighlightTonePriority;
+        /* stabilization */
+        short ImageStabilization;
+        /* focus */
+        short FocusMode;
+        short AFPoint;
+        short FocusContinuous;
+        short AFPointsInFocus30D;
+        uchar AFPointsInFocus1D[8];
+        ushort AFPointsInFocus5D; /* bytes in reverse*/
+                                /* AFInfo */
+        ushort AFAreaMode;
+        ushort NumAFPoints;
+        ushort ValidAFPoints;
+        ushort AFImageWidth;
+        ushort AFImageHeight;
+        short AFAreaWidths[61];     /* cycle to NumAFPoints */
+        short AFAreaHeights[61];    /* --''--               */
+        short AFAreaXPositions[61]; /* --''--               */
+        short AFAreaYPositions[61]; /* --''--               */
+        short AFPointsInFocus[4];   /* cycle to floor((NumAFPoints+15)/16) */
+        short AFPointsSelected[4];  /* --''--               */
+        ushort PrimaryAFPoint;
+        /* flash */
+        short FlashMode;
+        short FlashActivity;
+        short FlashBits;
+        short ManualFlashOutput;
+        short FlashOutput;
+        short FlashGuideNumber;
+        /* drive */
+        short ContinuousDrive;
+        /* sensor */
+        short SensorWidth;
+        short SensorHeight;
+        short SensorLeftBorder;
+        short SensorTopBorder;
+        short SensorRightBorder;
+        short SensorBottomBorder;
+        short BlackMaskLeftBorder;
+        short BlackMaskTopBorder;
+        short BlackMaskRightBorder;
+        short BlackMaskBottomBorder;
+        int AFMicroAdjMode;
+        float AFMicroAdjValue;
+
+    } libraw_canon_makernotes_t;
+
+    typedef struct
+    {
+        int BaseISO;
+        double Gain;
+    } libraw_hasselblad_makernotes_t;
+
+    typedef struct
+    {
+        float FujiExpoMidPointShift;
+        ushort FujiDynamicRange;
+        ushort FujiFilmMode;
+        ushort FujiDynamicRangeSetting;
+        ushort FujiDevelopmentDynamicRange;
+        ushort FujiAutoDynamicRange;
+        ushort FocusMode;
+        ushort AFMode;
+        ushort FocusPixel[2];
+        ushort ImageStabilization[3];
+        ushort FlashMode;
+        ushort WB_Preset;
+        ushort ShutterType;
+        ushort ExrMode;
+        ushort Macro;
+        unsigned Rating;
+        ushort FrameRate;
+        ushort FrameWidth;
+        ushort FrameHeight;
+    } libraw_fuji_info_t;
+
+    typedef struct
+    {
+
+        double ExposureBracketValue;
+        ushort ActiveDLighting;
+        ushort ShootingMode;
+        /* stabilization */
+        uchar ImageStabilization[7];
+        uchar VibrationReduction;
+        uchar VRMode;
+        /* focus */
+        char FocusMode[7];
+        uchar AFPoint;
+        ushort AFPointsInFocus;
+        uchar ContrastDetectAF;
+        uchar AFAreaMode;
+        uchar PhaseDetectAF;
+        uchar PrimaryAFPoint;
+        uchar AFPointsUsed[29];
+        ushort AFImageWidth;
+        ushort AFImageHeight;
+        ushort AFAreaXPposition;
+        ushort AFAreaYPosition;
+        ushort AFAreaWidth;
+        ushort AFAreaHeight;
+        uchar ContrastDetectAFInFocus;
+        /* flash */
+        char FlashSetting[13];
+        char FlashType[20];
+        uchar FlashExposureCompensation[4];
+        uchar ExternalFlashExposureComp[4];
+        uchar FlashExposureBracketValue[4];
+        uchar FlashMode;
+        signed char FlashExposureCompensation2;
+        signed char FlashExposureCompensation3;
+        signed char FlashExposureCompensation4;
+        uchar FlashSource;
+        uchar FlashFirmware[2];
+        uchar ExternalFlashFlags;
+        uchar FlashControlCommanderMode;
+        uchar FlashOutputAndCompensation;
+        uchar FlashFocalLength;
+        uchar FlashGNDistance;
+        uchar FlashGroupControlMode[4];
+        uchar FlashGroupOutputAndCompensation[4];
+        uchar FlashColorFilter;
+        ushort NEFCompression;
+        int ExposureMode;
+        int nMEshots;
+        int MEgainOn;
+        double ME_WB[4];
+        uchar AFFineTune;
+        uchar AFFineTuneIndex;
+        int8_t AFFineTuneAdj;
+    } libraw_nikon_makernotes_t;
+
+    typedef struct
+    {
+        int OlympusCropID;
+        ushort OlympusFrame[4]; /* upper left XY, lower right XY */
+        int OlympusSensorCalibration[2];
+        ushort FocusMode[2];
+        ushort AutoFocus;
+        ushort AFPoint;
+        unsigned AFAreas[64];
+        double AFPointSelected[5];
+        ushort AFResult;
+        unsigned ImageStabilization;
+        ushort ColorSpace;
+        uchar AFFineTune;
+        short AFFineTuneAdj[3];
+    } libraw_olympus_makernotes_t;
+
+    typedef struct
+    {
+    /* Compression:
+    34826 (Panasonic RAW 2): LEICA DIGILUX 2;
+    34828 (Panasonic RAW 3): LEICA D-LUX 3; LEICA V-LUX 1; Panasonic DMC-LX1; Panasonic DMC-LX2; Panasonic DMC-FZ30; Panasonic DMC-FZ50;
+    34830 (not in exiftool): LEICA DIGILUX 3; Panasonic DMC-L1;
+    34316 (Panasonic RAW 1): others (LEICA, Panasonic, YUNEEC);
+    */
+        ushort Compression;
+        ushort BlackLevelDim;
+        float BlackLevel[8];
+    } libraw_panasonic_makernotes_t;
+
+    typedef struct
+    {
+        ushort FocusMode;
+        ushort AFPointSelected;
+        unsigned AFPointsInFocus;
+        ushort FocusPosition;
+        uchar DriveMode[4];
+        short AFAdjustment;
+        /*    uchar AFPointMode;     */
+        /*    uchar SRResult;        */
+        /*    uchar ShakeReduction;  */
+    } libraw_pentax_makernotes_t;
+
+    typedef struct
+    {
+        ushort BlackLevelTop;
+        ushort BlackLevelBottom;
+        short offset_left, offset_top; /* KDC files, negative values or zeros */
+        ushort clipBlack, clipWhite;   /* valid for P712, P850, P880 */
+        float romm_camDaylight[3][3];
+        float romm_camTungsten[3][3];
+        float romm_camFluorescent[3][3];
+        float romm_camFlash[3][3];
+        float romm_camCustom[3][3];
+        float romm_camAuto[3][3];
+    } libraw_kodak_makernotes_t;
+
+    typedef struct
+    {
+        ushort SonyCameraType;
+        uchar Sony0x9400_version; /* 0 if not found/deciphered, 0xa, 0xb, 0xc following exiftool convention */
+        uchar Sony0x9400_ReleaseMode2;
+        unsigned Sony0x9400_SequenceImageNumber;
+        uchar Sony0x9400_SequenceLength1;
+        unsigned Sony0x9400_SequenceFileNumber;
+        uchar Sony0x9400_SequenceLength2;
+        libraw_raw_crop_t raw_crop;
+        int8_t AFMicroAdjValue;
+        int8_t AFMicroAdjOn;
+        uchar AFMicroAdjRegisteredLenses;
+        ushort group2010;
+        ushort real_iso_offset;
+        float firmware;
+        ushort ImageCount3_offset;
+        unsigned ImageCount3;
+        unsigned ElectronicFrontCurtainShutter;
+        ushort MeteringMode2;
+        char SonyDateTime[20];
+        uchar TimeStamp[6];
+        unsigned ShotNumberSincePowerUp;
+    } libraw_sony_info_t;
+
+    typedef struct
+    {
+        unsigned parsedfields;
+        ushort illuminant;
+        float calibration[4][4];
+        float colormatrix[4][3];
+        float forwardmatrix[3][4];
+    } libraw_dng_color_t;
+
+    typedef struct
+    {
+        unsigned parsedfields;
+        unsigned dng_cblack[4102];
+        unsigned dng_black;
+        unsigned dng_whitelevel[4];
+        unsigned default_crop[4]; /* Origin and size */
+        unsigned preview_colorspace;
+        float analogbalance[4];
+    } libraw_dng_levels_t;
+
+    typedef struct
+    {
+        float romm_cam[9];
+    } libraw_P1_color_t;
+
+    typedef struct
+    {
+        ushort curve[0x10000];
+        unsigned cblack[4102];
+        unsigned black;
+        unsigned data_maximum;
+        unsigned maximum;
+        long linear_max[4];
+        float fmaximum;
+        float fnorm;
+        ushort white[8][8];
+        float cam_mul[4];
+        float pre_mul[4];
+        float cmatrix[3][4];
+        float ccm[3][4];
+        float rgb_cam[3][4];
+        float cam_xyz[4][3];
+        struct ph1_t phase_one_data;
+        float flash_used;
+        float canon_ev;
+        char model2[64];
+        char UniqueCameraModel[64];
+        char LocalizedCameraModel[64];
+        void *profile;
+        unsigned profile_length;
+        unsigned black_stat[8];
+        libraw_dng_color_t dng_color[2];
+        libraw_dng_levels_t dng_levels;
+        float baseline_exposure;
+        int WB_Coeffs[256][4];
+        float WBCT_Coeffs[64][5];
+        libraw_P1_color_t P1_color[2];
+    } libraw_colordata_t;
+
+    typedef struct
+    {
+        enum LibRaw_thumbnail_formats tformat;
+        ushort twidth, theight;
+        unsigned tlength;
+        int tcolors;
+        char *thumb;
+    } libraw_thumbnail_t;
+
+    typedef struct
+    {
+        libraw_canon_makernotes_t canon;
+        libraw_nikon_makernotes_t nikon;
+        libraw_hasselblad_makernotes_t hasselblad;
+        libraw_fuji_info_t fuji;
+        libraw_olympus_makernotes_t olympus;
+        libraw_sony_info_t sony;
+        libraw_kodak_makernotes_t kodak;
+        libraw_panasonic_makernotes_t panasonic;
+        libraw_pentax_makernotes_t pentax;
+    } libraw_makernotes_t;
+
+    typedef struct
+    {
         /* really allocated bitmap */
         void *raw_alloc;
         /* alias to single_channel variant */
@@ -167,6 +586,8 @@ ffi.cdef(
     int libraw_unpack(libraw_data_t *);
     void libraw_recycle(libraw_data_t *);
     int libraw_raw2image(libraw_data_t *);
+
+    int libraw_adjust_sizes_info_only(libraw_data_t *);
     """,
 )
 
