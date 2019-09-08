@@ -16,3 +16,11 @@ script:
 
 after_success:
 - tox -e codecov
+
+addons:
+  apt:
+    packages:
+      - libraw
+      - libraw-dev
+  homebrew:
+    packages: libraw
