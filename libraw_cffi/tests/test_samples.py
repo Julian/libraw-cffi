@@ -3,7 +3,10 @@ A reimplementation of the examples in the samples directory.
 """
 from unittest import TestCase
 
-from bp.filepath import FilePath
+try:
+    from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
 
 from _raw import ffi, lib
 
@@ -15,7 +18,7 @@ class TestSamples(TestCase):
 
         lib.libraw_open_file(
             data,
-            FilePath(__file__).sibling("_DSC2164.ARW").path,
+            str(Path(__file__).parent / "_DSC2164.ARW"),
         )
         self.assertEqual(
             (

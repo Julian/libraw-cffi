@@ -3,7 +3,10 @@ A reimplementation of https://www.libraw.org/docs/API-overview.html
 """
 from unittest import TestCase
 
-from bp.filepath import FilePath
+try:
+    from pathlib2 import Path
+except ImportError:
+    from pathlib import Path
 
 from _raw import lib
 
@@ -15,7 +18,7 @@ class TestDemonstration(TestCase):
 
         lib.libraw_open_file(
             data,
-            FilePath(__file__).sibling("_DSC2164.ARW").path,
+            str(Path(__file__).parent / "_DSC2164.ARW"),
         )
         self.assertEqual((data.sizes.width, data.sizes.height), (5216, 3464))
 
