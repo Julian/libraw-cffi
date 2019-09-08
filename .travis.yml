@@ -19,8 +19,6 @@ after_success:
 
 addons:
   apt:
-    packages:
-      - libraw
-      - libraw-dev
+    packages: libraw-dev
   homebrew:
     packages: libraw
