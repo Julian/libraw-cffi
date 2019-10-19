@@ -12,9 +12,9 @@ libraw-cffi
   :alt: Supported Python versions
   :target: https://pypi.org/project/libraw-cffi/
 
-.. |CI| image:: https://travis-ci.org/Julian/libraw-cffi.svg?branch=master
+.. |CI| image:: https://travis-ci.com/Julian/libraw-cffi.svg?branch=master
   :alt: Build status
-  :target: https://travis-ci.org/Julian/libraw-cffi
+  :target: https://travis-ci.com/Julian/libraw-cffi
 
 .. |Codecov| image:: https://codecov.io/gh/Julian/libraw-cffi/branch/master/graph/badge.svg
   :alt: Codecov Code coverage
