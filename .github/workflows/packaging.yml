@@ -7,9 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest]
         python-version: [pypy2, pypy3, 3.7, 3.8]
 
     steps:
@@ -33,7 +34,7 @@ jobs:
       run: python -m pep517.build .
     - uses: actions/upload-artifact@master
       with:
-        name: dist-${{ matrix.python-version }}
+        name: dist-${{ matrix.os }}-${{ matrix.python-version }}
         path: dist
     - name: Publish package
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && matrix.python-version == 'pypy3' && runner.os == 'Linux'
