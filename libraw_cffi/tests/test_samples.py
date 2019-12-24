@@ -18,7 +18,7 @@ class TestSamples(TestCase):
 
         lib.libraw_open_file(
             data,
-            str(Path(__file__).parent / "_DSC2164.ARW"),
+            bytes(Path(__file__).parent / "_DSC2164.ARW"),
         )
         self.assertEqual(
             (
