@@ -20,7 +20,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: sudo apt-get install -y libraw-dev
+      run: >
+        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzv &&
+        cd LibRaw-0.19.5 &&
+        ./configure &&
+        make &&
+        sudo make install
       if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install libraw
