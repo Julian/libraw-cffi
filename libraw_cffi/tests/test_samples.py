@@ -41,7 +41,7 @@ class TestSamples(TestCase):
                 ffi.string(data.other.artist),
                 data.idata.dng_version,
             ),
-            (1531286327, 362, b"", b"30ff0000e608", b"", 0),
+            (1531264727, 362, b"", b"30ff0000e608", b"", 0),
         )
 
         self.assertEqual(
