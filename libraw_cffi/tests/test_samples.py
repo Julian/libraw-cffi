@@ -27,7 +27,7 @@ class TestSamples(TestCase):
                 data.sizes.width,
                 data.sizes.height,
             ),
-            ("Sony", "ILCE-7RM3", 5216, 3464),
+            (b"Sony", b"ILCE-7RM3", 5216, 3464),
         )
 
         lib.libraw_adjust_sizes_info_only(data)
@@ -41,7 +41,7 @@ class TestSamples(TestCase):
                 ffi.string(data.other.artist),
                 data.idata.dng_version,
             ),
-            (1531286327, 362, "", "30ff0000e608", "", 0),
+            (1531286327, 362, b"", b"30ff0000e608", b"", 0),
         )
 
         self.assertEqual(
@@ -62,8 +62,8 @@ class TestSamples(TestCase):
                 6.300000190734863,
                 5.595918655395508,
                 193,
-                "",
-                "E 55-210mm F4.5-6.3 OSS",
+                b"",
+                b"E 55-210mm F4.5-6.3 OSS",
             ),
         )
 
@@ -90,7 +90,7 @@ class TestSamples(TestCase):
                 data.lens.makernotes.LensMount,
                 data.lens.makernotes.FocalType,
             ),
-            ("", 2, 2, 32786, "", 1, 2, 0),
+            (b"", 2, 2, 32786, b"", 1, 2, 0),
         )
 
         self.assertEqual(
@@ -111,8 +111,8 @@ class TestSamples(TestCase):
                 data.lens.makernotes.MinAp4CurFocal,
             ),
             (
-                "",
-                "",
+                b"",
+                b"",
                 55.0,
                 210.0,
                 4.5,
@@ -141,5 +141,5 @@ class TestSamples(TestCase):
 
         self.assertEqual(
             (data.color.profile, ffi.string(data.color.model2)),
-            (ffi.NULL, ""),
+            (ffi.NULL, b""),
         )
