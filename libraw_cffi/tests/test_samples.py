@@ -1,6 +1,7 @@
 """
 A reimplementation of the examples in the samples directory.
 """
+from datetime import datetime
 from unittest import TestCase
 
 try:
@@ -34,14 +35,24 @@ class TestSamples(TestCase):
 
         self.assertEqual(
             (
-                data.other.timestamp,
+                # Whee.. this looks like a naive datetime stored in the ARW
+                datetime.fromtimestamp(data.other.timestamp),
                 data.lens.makernotes.CamID,
                 ffi.string(data.shootinginfo.BodySerial),
                 ffi.string(data.shootinginfo.InternalBodySerial),
                 ffi.string(data.other.artist),
                 data.idata.dng_version,
             ),
-            (1531264727, 0x16a, b"", b"30ff0000e608", b"", 0),
+            (
+                datetime(
+                    month=7, day=11, year=2018, hour=1, minute=18, second=47,
+                ),
+                0x16a,
+                b"",
+                b"30ff0000e608",
+                b"",
+                0,
+            ),
         )
 
         self.assertEqual(
