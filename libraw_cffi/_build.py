@@ -581,6 +581,7 @@ ffi.cdef(
         void *parent_class;
     } libraw_data_t;
 
+    const char *libraw_strerror(int errorcode);
     libraw_data_t *libraw_init(unsigned int flags);
     int libraw_open_file(libraw_data_t *, const char *);
     int libraw_unpack(libraw_data_t *);

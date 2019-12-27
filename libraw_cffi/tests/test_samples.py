@@ -4,12 +4,8 @@ A reimplementation of the examples in the samples directory.
 from datetime import datetime
 from unittest import TestCase
 
-try:
-    from pathlib2 import Path
-except ImportError:
-    from pathlib import Path
-
 from _raw import ffi, lib
+from libraw_cffi.tests import Path
 
 
 class TestSamples(TestCase):
