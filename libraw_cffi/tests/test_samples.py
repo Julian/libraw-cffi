@@ -146,8 +146,20 @@ class TestSamples(TestCase):
                 data.thumbnail.theight,
                 data.sizes.raw_width,
                 data.sizes.raw_height,
+                data.sizes.iwidth,
+                data.sizes.iheight,
             ),
-            (1.0, 1616, 1080, 5216, 3464),
+            (1.0, 1616, 1080, 5216, 3464, 5216, 3464),
+        )
+
+        self.assertEqual(
+            (
+                data.sizes.raw_crop.cwidth,
+                data.sizes.raw_crop.cheight,
+                data.sizes.raw_crop.cleft,
+                data.sizes.raw_crop.ctop,
+            ),
+            (5168, 3448, 8, 8),
         )
 
         self.assertEqual(
