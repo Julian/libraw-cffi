@@ -164,7 +164,7 @@ class TestSamples(TestCase):
                 list(data.color.linear_max),
             ), (
                 3,
-                "RGBG",
+                b"RGBG",
                 [15360] * 4,
             ),
         )
