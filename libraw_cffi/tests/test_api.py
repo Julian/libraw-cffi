@@ -20,5 +20,4 @@ class TestAPI(TestCase):
 
     def test_from_nonexisting_path(self):
         with self.assertRaises(libraw_cffi.LibRawError):
-            with libraw_cffi.from_path(Path("/some/file/that/does/not/exist")):
-                pass
+            libraw_cffi.from_path(Path("/some/file/that/does/not/exist"))
