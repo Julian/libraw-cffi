@@ -1,4 +1,5 @@
-from contextlib import contextmanager
+from contextlib import closing
+import mmap
 
 from _raw import ffi, lib
 
@@ -12,11 +13,27 @@ class LibRawError(Exception):
         return self._message
 
 
-@contextmanager
-def load(path):
-    data = lib.libraw_init(0)
+def from_file(file, size=None):
+    data = _data()
+    mmapped = mmap.mmap(file.fileno(), 0, mmap.MAP_PRIVATE, mmap.PROT_READ)
+    with closing(mmapped):
+        lib.libraw_open_buffer(
+            data,
+            ffi.from_buffer(mmapped),
+            mmapped.size(),
+        )
+    return data
+
+
+def from_path(path):
+    data = _data()
     failed = lib.libraw_open_file(data, bytes(path))
     if failed:
         raise LibRawError(failed)
-    yield data
-    lib.libraw_recycle(data)
+    return data
+
+
+def _data():
+    data = lib.libraw_init(0)
+    ffi.gc(data, lib.libraw_recycle)
+    return data

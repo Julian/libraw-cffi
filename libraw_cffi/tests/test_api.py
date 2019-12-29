@@ -4,15 +4,21 @@ from libraw_cffi.tests import Path
 import libraw_cffi
 
 
-class TestAPI(TestCase):
-    def test_load(self):
-        with libraw_cffi.load(Path(__file__).parent / "_DSC2164.ARW") as data:
-            self.assertEqual(
-                (data.sizes.width, data.sizes.height),
-                (5216, 3464),
-            )
+RADIOHEAD = Path(__file__).parent / "_DSC2164.ARW"
+RADIOHEAD_SIZE = 5216, 3464
 
-    def test_load_nonexistent_file(self):
+
+class TestAPI(TestCase):
+    def test_from_file(self):
+        with RADIOHEAD.open() as file:
+            data = libraw_cffi.from_file(file)
+        self.assertEqual((data.sizes.width, data.sizes.height), RADIOHEAD_SIZE)
+
+    def test_from_path(self):
+        data = libraw_cffi.from_path(RADIOHEAD)
+        self.assertEqual((data.sizes.width, data.sizes.height), RADIOHEAD_SIZE)
+
+    def test_from_nonexisting_path(self):
         with self.assertRaises(libraw_cffi.LibRawError):
-            with libraw_cffi.load(Path("/some/file/that/does/not/exist")):
+            with libraw_cffi.from_path(Path("/some/file/that/does/not/exist")):
                 pass
