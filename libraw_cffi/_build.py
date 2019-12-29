@@ -587,6 +587,7 @@ ffi.cdef(
     int libraw_open_buffer(libraw_data_t *, void *buffer, size_t size);
     int libraw_unpack(libraw_data_t *);
     void libraw_recycle(libraw_data_t *);
+    void libraw_close(libraw_data_t *);
     int libraw_raw2image(libraw_data_t *);
 
     int libraw_adjust_sizes_info_only(libraw_data_t *);

@@ -27,13 +27,16 @@ def from_file(file, size=None):
 
 def from_path(path):
     data = _data()
-    failed = lib.libraw_open_file(data, bytes(path))
-    if failed:
-        raise LibRawError(failed)
+    _succeed(lib.libraw_open_file(data, bytes(path)))
     return data
+
+
+def _succeed(errorcode):
+    if errorcode:
+        raise LibRawError(errorcode)
 
 
 def _data():
     data = lib.libraw_init(0)
-    ffi.gc(data, lib.libraw_recycle)
+    ffi.gc(data, lib.libraw_close)
     return data
