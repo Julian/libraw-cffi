@@ -6,17 +6,13 @@ from unittest import TestCase
 
 from _raw import ffi, lib
 from libraw_cffi.tests import Path
+import libraw_cffi
 
 
 class TestSamples(TestCase):
     def test_raw_identify(self):
-        data = lib.libraw_init(0)
-        self.addCleanup(lib.libraw_recycle, data)
+        data = libraw_cffi.from_path(Path(__file__).parent / "_DSC2164.ARW")
 
-        lib.libraw_open_file(
-            data,
-            bytes(Path(__file__).parent / "_DSC2164.ARW"),
-        )
         self.assertEqual(
             (
                 ffi.string(data.idata.make),
