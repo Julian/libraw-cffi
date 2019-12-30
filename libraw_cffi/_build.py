@@ -597,6 +597,10 @@ ffi.cdef(
     DllDef void libraw_close(libraw_data_t *);
     DllDef int libraw_raw2image(libraw_data_t *);
 
+    /* version helpers */
+    DllDef const char *libraw_version();
+    DllDef int libraw_versionNumber();
+
     /* DCRAW compatibility */
     DllDef int libraw_adjust_sizes_info_only(libraw_data_t *);
     """.replace("DllDef ", ""),
