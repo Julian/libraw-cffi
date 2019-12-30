@@ -3,4 +3,3 @@ include .coveragerc
 include COPYING
 include pyproject.toml
 include tox.ini
-include libraw_cffi/tests/*.ARW
