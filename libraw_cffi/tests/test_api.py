@@ -1,12 +1,8 @@
 from unittest import TestCase
 
 from _raw import ffi, lib
-from libraw_cffi.tests import Path
+from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE, Path
 import libraw_cffi
-
-
-RADIOHEAD = Path(__file__).parent / "_DSC2164.ARW"
-RADIOHEAD_SIZE = 5216, 3464
 
 
 class TestAPI(TestCase):

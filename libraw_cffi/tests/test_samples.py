@@ -5,13 +5,13 @@ from datetime import datetime
 from unittest import TestCase
 
 from _raw import ffi, lib
-from libraw_cffi.tests import Path
+from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE, Path
 import libraw_cffi
 
 
 class TestSamples(TestCase):
     def test_raw_identify(self):
-        data = libraw_cffi.from_path(Path(__file__).parent / "_DSC2164.ARW")
+        data = libraw_cffi.from_path(RADIOHEAD)
 
         self.assertEqual(
             (
@@ -20,7 +20,7 @@ class TestSamples(TestCase):
                 data.sizes.width,
                 data.sizes.height,
             ),
-            (b"Sony", b"ILCE-7RM3", 5216, 3464),
+            (b"Sony", b"ILCE-7RM3") + RADIOHEAD_SIZE,
         )
 
         lib.libraw_adjust_sizes_info_only(data)
