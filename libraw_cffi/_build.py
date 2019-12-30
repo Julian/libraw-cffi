@@ -19,6 +19,12 @@ ffi.cdef(
     typedef char... uchar;
     typedef int... ushort;
 
+    enum LibRaw_errors
+    {
+        LIBRAW_IO_ERROR,
+        ...
+    };
+
     typedef struct
         {
         char	    guard[4];

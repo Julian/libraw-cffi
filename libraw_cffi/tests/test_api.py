@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from _raw import ffi, lib
 from libraw_cffi.tests import Path
 import libraw_cffi
 
@@ -19,5 +20,9 @@ class TestAPI(TestCase):
         self.assertEqual((data.sizes.width, data.sizes.height), RADIOHEAD_SIZE)
 
     def test_from_nonexisting_path(self):
-        with self.assertRaises(libraw_cffi.LibRawError):
+        with self.assertRaises(libraw_cffi.LibRawError) as e:
             libraw_cffi.from_path(Path("/some/file/that/does/not/exist"))
+        self.assertIn(
+            ffi.string(lib.libraw_strerror(lib.LIBRAW_IO_ERROR)),
+            str(e.exception),
+        )
