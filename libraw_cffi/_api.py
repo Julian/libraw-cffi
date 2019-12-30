@@ -6,12 +6,20 @@ from _raw import ffi, lib
 
 
 class LibRawError(Exception):
-    def __init__(self, errorcode):
-        super(LibRawError, self).__init__(errorcode)
-        self._message = ffi.string(lib.libraw_strerror(errorcode))
+    def __init__(self, message, code=None):
+        super(LibRawError, self).__init__(message, code)
+        self._message = message
+        self._code = code
 
     def __str__(self):
         return self._message
+
+    @classmethod
+    def from_code(cls, code):
+        return cls(
+            message=ffi.string(lib.libraw_strerror(code)),
+            code=code,
+        )
 
 
 def from_file(file, size=None):
@@ -36,7 +44,7 @@ def _succeed(errorcode):
     # Implement the behavior specified in
     # https://www.libraw.org/docs/API-notes.html#errors
     if errorcode < 0:
-        raise LibRawError(errorcode)
+        raise LibRawError.from_code(errorcode)
     elif errorcode > 0:
         raise OSError(errorcode, os.strerror(errorcode))
 
