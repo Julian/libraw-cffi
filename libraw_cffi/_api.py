@@ -1,5 +1,6 @@
 from contextlib import closing
 import mmap
+import os
 
 from _raw import ffi, lib
 
@@ -32,8 +33,12 @@ def from_path(path):
 
 
 def _succeed(errorcode):
-    if errorcode:
+    # Implement the behavior specified in
+    # https://www.libraw.org/docs/API-notes.html#errors
+    if errorcode < 0:
         raise LibRawError(errorcode)
+    elif errorcode > 0:
+        raise OSError(errorcode, os.strerror(errorcode))
 
 
 def _data():
