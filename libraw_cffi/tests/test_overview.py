@@ -3,7 +3,7 @@ A reimplementation of https://www.libraw.org/docs/API-overview.html
 """
 from unittest import TestCase
 
-from _raw import ffi, lib
+from _raw import lib
 from libraw_cffi.tests import Path
 import libraw_cffi
 
