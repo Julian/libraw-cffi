@@ -5,7 +5,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from _raw import ffi, lib
-from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE, Path
+from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE
 import libraw_cffi
 
 

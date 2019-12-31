@@ -4,7 +4,7 @@ A reimplementation of https://www.libraw.org/docs/API-overview.html
 from unittest import TestCase
 
 from _raw import lib
-from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE, Path
+from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE
 import libraw_cffi
 
 
