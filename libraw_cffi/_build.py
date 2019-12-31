@@ -603,6 +603,7 @@ ffi.cdef(
 
     /* DCRAW compatibility */
     DllDef int libraw_adjust_sizes_info_only(libraw_data_t *);
+    DllDef int libraw_dcraw_process(libraw_data_t *lr);
     """.replace("DllDef ", ""),
 )
 
