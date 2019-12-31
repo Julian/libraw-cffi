@@ -20,5 +20,5 @@ class TestAPI(TestCase):
             libraw_cffi.from_path(Path("/some/file/that/does/not/exist"))
         self.assertIn(
             ffi.string(lib.libraw_strerror(lib.LIBRAW_IO_ERROR)),
-            str(e.exception),
+            str(e.exception).encode("utf-8"),
         )

@@ -1,8 +1,12 @@
 from contextlib import closing
 import mmap
 import os
+import sys
 
 from _raw import ffi, lib
+
+
+PY2 = sys.version_info[0] == 2
 
 
 class LibRawError(Exception):
@@ -16,10 +20,10 @@ class LibRawError(Exception):
 
     @classmethod
     def from_code(cls, code):
-        return cls(
-            message=ffi.string(lib.libraw_strerror(code)),
-            code=code,
-        )
+        message = ffi.string(lib.libraw_strerror(code))
+        if not PY2:
+            message = message.decode()
+        return cls(message=message, code=code)
 
 
 def from_file(file, size=None):
