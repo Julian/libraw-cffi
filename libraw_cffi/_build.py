@@ -26,6 +26,14 @@ ffi.cdef(
     };
 
     typedef struct
+    {
+        enum LibRaw_image_formats type;
+        ushort height, width, colors, bits;
+        unsigned int data_size;
+        unsigned char data[1];
+    } libraw_processed_image_t;
+
+    typedef struct
         {
         char	    guard[4];
         char        make[64];
