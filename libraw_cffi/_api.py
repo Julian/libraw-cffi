@@ -57,5 +57,4 @@ def _data():
     data = lib.libraw_init(0)
     if data == ffi.NULL:
         raise LibRawError(message="Null pointer returned by libraw_init")
-    ffi.gc(data, lib.libraw_close)
-    return data
+    return ffi.gc(data, lib.libraw_close)
