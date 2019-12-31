@@ -603,7 +603,12 @@ ffi.cdef(
 
     /* DCRAW compatibility */
     DllDef int libraw_adjust_sizes_info_only(libraw_data_t *);
+    DllDef int libraw_dcraw_ppm_tiff_writer(libraw_data_t *lr, const char *filename);
+    DllDef int libraw_dcraw_thumb_writer(libraw_data_t *lr, const char *fname);
     DllDef int libraw_dcraw_process(libraw_data_t *lr);
+    DllDef libraw_processed_image_t *libraw_dcraw_make_mem_image(libraw_data_t *lr, int *errc);
+    DllDef libraw_processed_image_t *libraw_dcraw_make_mem_thumb(libraw_data_t *lr, int *errc);
+    DllDef void libraw_dcraw_clear_mem(libraw_processed_image_t *);
     """.replace("DllDef ", ""),
 )
 
