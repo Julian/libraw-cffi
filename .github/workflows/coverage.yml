@@ -21,11 +21,10 @@ jobs:
       run: python -m pip install tox
     - name: Install dependencies
       run: >
-        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzv &&
-        cd LibRaw-0.19.5 &&
-        ./configure &&
-        make &&
-        sudo make install
+        wget 'http://archive.ubuntu.com/ubuntu/pool/main/libr/libraw/libraw19_0.19.2-2_amd64.deb' &&
+        wget 'http://archive.ubuntu.com/ubuntu/pool/main/libr/libraw/libraw-dev_0.19.2-2_amd64.deb' &&
+        sudo dpkg -i libraw19_0.19.2-2_amd64.deb &&
+        sudo dpkg -i libraw-dev_0.19.2-2_amd64.deb
       if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install libraw
