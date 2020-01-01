@@ -7,6 +7,11 @@ from _raw import ffi, lib
 
 
 PY2 = sys.version_info[0] == 2
+try:
+    fsencode = os.fsencode
+except AttributeError:
+    def fsencode(path):  # Ha ha...
+        return bytes(path)
 
 
 class LibRawError(Exception):
@@ -40,7 +45,7 @@ def from_file(file, size=None):
 
 def from_path(path):
     data = _data()
-    _succeed(lib.libraw_open_file(data, bytes(path)))
+    _succeed(lib.libraw_open_file(data, fsencode(path)))
     return data
 
 
