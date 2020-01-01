@@ -19,11 +19,53 @@ ffi.cdef(
     typedef char... uchar;
     typedef int... ushort;
 
+    typedef int... INT64;
+
     enum LibRaw_errors
     {
         LIBRAW_IO_ERROR,
         ...
     };
+
+    typedef struct
+    {
+        const char *decoder_name;
+        unsigned decoder_flags;
+    } libraw_decoder_info_t;
+
+    typedef void (*memory_callback)(void *data, const char *file, const char *where);
+    typedef void (*exif_parser_callback)(void *context, int tag, int type, int len, unsigned int ord, void *ifp);
+
+    DllDef void default_memory_callback(void *data, const char *file, const char *where);
+
+    typedef void (*data_callback)(void *data, const char *file, const int offset);
+
+    DllDef void default_data_callback(void *data, const char *file, const int offset);
+
+    typedef int (*progress_callback)(void *data, enum LibRaw_progress stage, int iteration, int expected);
+    typedef int (*pre_identify_callback)(void *ctx);
+    typedef void (*post_identify_callback)(void *ctx);
+    typedef void (*process_step_callback)(void *ctx);
+
+    typedef struct
+    {
+        memory_callback mem_cb;
+        void *memcb_data;
+
+        data_callback data_cb;
+        void *datacb_data;
+
+        progress_callback progress_cb;
+        void *progresscb_data;
+
+        exif_parser_callback exif_cb;
+        void *exifparser_data;
+        pre_identify_callback pre_identify_cb;
+        post_identify_callback post_identify_cb;
+        process_step_callback pre_subtractblack_cb, pre_scalecolors_cb, pre_preinterpolate_cb, pre_interpolate_cb,
+                            interpolate_bayer_cb, interpolate_xtrans_cb,
+                            post_interpolate_cb, pre_converttorgb_cb, post_converttorgb_cb;
+    } libraw_callbacks_t;
 
     typedef struct
     {
@@ -596,18 +638,36 @@ ffi.cdef(
     } libraw_data_t;
 
     DllDef const char *libraw_strerror(int errorcode);
+    DllDef const char *libraw_strprogress(enum LibRaw_progress);
     /* LibRaw C API */
     DllDef libraw_data_t *libraw_init(unsigned int flags);
     DllDef int libraw_open_file(libraw_data_t *, const char *);
+    DllDef int libraw_open_file_ex(libraw_data_t *, const char *, INT64 max_buff_sz);
     DllDef int libraw_open_buffer(libraw_data_t *, void *buffer, size_t size);
     DllDef int libraw_unpack(libraw_data_t *);
+    DllDef int libraw_unpack_thumb(libraw_data_t *);
+    DllDef void libraw_recycle_datastream(libraw_data_t *);
     DllDef void libraw_recycle(libraw_data_t *);
     DllDef void libraw_close(libraw_data_t *);
+    DllDef void libraw_subtract_black(libraw_data_t *);
     DllDef int libraw_raw2image(libraw_data_t *);
-
+    DllDef void libraw_free_image(libraw_data_t *);
     /* version helpers */
     DllDef const char *libraw_version();
     DllDef int libraw_versionNumber();
+    /* Camera list */
+    DllDef const char **libraw_cameraList();
+    DllDef int libraw_cameraCount();
+
+    /* helpers */
+    DllDef void libraw_set_memerror_handler(libraw_data_t *, memory_callback cb, void *datap);
+    DllDef void libraw_set_exifparser_handler(libraw_data_t *, exif_parser_callback cb, void *datap);
+    DllDef void libraw_set_dataerror_handler(libraw_data_t *, data_callback func, void *datap);
+    DllDef void libraw_set_progress_handler(libraw_data_t *, progress_callback cb, void *datap);
+    DllDef const char *libraw_unpack_function_name(libraw_data_t *lr);
+    DllDef int libraw_get_decoder_info(libraw_data_t *lr, libraw_decoder_info_t *d);
+    DllDef int libraw_COLOR(libraw_data_t *, int row, int col);
+    DllDef unsigned libraw_capabilities();
 
     /* DCRAW compatibility */
     DllDef int libraw_adjust_sizes_info_only(libraw_data_t *);
@@ -617,6 +677,28 @@ ffi.cdef(
     DllDef libraw_processed_image_t *libraw_dcraw_make_mem_image(libraw_data_t *lr, int *errc);
     DllDef libraw_processed_image_t *libraw_dcraw_make_mem_thumb(libraw_data_t *lr, int *errc);
     DllDef void libraw_dcraw_clear_mem(libraw_processed_image_t *);
+    /* getters/setters used by 3DLut Creator */
+    DllDef void libraw_set_demosaic(libraw_data_t *lr, int value);
+    DllDef void libraw_set_output_color(libraw_data_t *lr, int value);
+    DllDef void libraw_set_user_mul(libraw_data_t *lr, int index, float val);
+    DllDef void libraw_set_output_bps(libraw_data_t *lr, int value);
+    DllDef void libraw_set_gamma(libraw_data_t *lr, int index, float value);
+    DllDef void libraw_set_no_auto_bright(libraw_data_t *lr, int value);
+    DllDef void libraw_set_bright(libraw_data_t *lr, float value);
+    DllDef void libraw_set_highlight(libraw_data_t *lr, int value);
+    DllDef void libraw_set_fbdd_noiserd(libraw_data_t *lr, int value);
+    DllDef int libraw_get_raw_height(libraw_data_t *lr);
+    DllDef int libraw_get_raw_width(libraw_data_t *lr);
+    DllDef int libraw_get_iheight(libraw_data_t *lr);
+    DllDef int libraw_get_iwidth(libraw_data_t *lr);
+    DllDef float libraw_get_cam_mul(libraw_data_t *lr, int index);
+    DllDef float libraw_get_pre_mul(libraw_data_t *lr, int index);
+    DllDef float libraw_get_rgb_cam(libraw_data_t *lr, int index1, int index2);
+    DllDef int libraw_get_color_maximum(libraw_data_t *lr);
+
+    DllDef libraw_iparams_t *libraw_get_iparams(libraw_data_t *lr);
+    DllDef libraw_lensinfo_t *libraw_get_lensinfo(libraw_data_t *lr);
+    DllDef libraw_imgother_t *libraw_get_imgother(libraw_data_t *lr);
     """.replace("DllDef ", ""),
 )
 
