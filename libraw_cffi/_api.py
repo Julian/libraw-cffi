@@ -58,6 +58,20 @@ def _succeed(errorcode):
         raise OSError(errorcode, os.strerror(errorcode))
 
 
+def version():
+    return ffi.string(lib.libraw_version())
+
+
+def version_info():
+    number = lib.libraw_versionNumber()
+    patch = number & 0xFF
+    number >>= 8
+    minor = number & 0xFF
+    number >>= 8
+    major = number & 0xFF
+    return major, minor, patch
+
+
 def _data():
     data = lib.libraw_init(0)
     if data == ffi.NULL:

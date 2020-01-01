@@ -22,3 +22,9 @@ class TestAPI(TestCase):
             ffi.string(lib.libraw_strerror(lib.LIBRAW_IO_ERROR)),
             str(e.exception).encode("utf-8"),
         )
+
+    def test_version(self):
+        self.assertIn(
+            ".".join(map(str, libraw_cffi.version_info())),
+            libraw_cffi.version(),
+        )
