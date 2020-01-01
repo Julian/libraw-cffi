@@ -25,6 +25,6 @@ class TestAPI(TestCase):
 
     def test_version(self):
         self.assertIn(
-            ".".join(map(str, libraw_cffi.version_info())),
+            ".".join(map(str, libraw_cffi.version_info())).encode(),
             libraw_cffi.version(),
         )
