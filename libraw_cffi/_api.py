@@ -35,10 +35,12 @@ def from_file(file, size=None):
     data = _data()
     mmapped = mmap.mmap(file.fileno(), 0, mmap.MAP_PRIVATE, mmap.PROT_READ)
     with closing(mmapped):
-        lib.libraw_open_buffer(
-            data,
-            ffi.from_buffer(mmapped),
-            mmapped.size(),
+        _succeed(
+            lib.libraw_open_buffer(
+                data,
+                ffi.from_buffer(mmapped),
+                mmapped.size(),
+            ),
         )
     return data
 
