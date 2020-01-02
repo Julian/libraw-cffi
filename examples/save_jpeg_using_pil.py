@@ -14,8 +14,7 @@ dest = sys.argv[2]
 raw = Raw.from_path(src)
 raw.unpack()
 raw.dcraw_process()
-pointer = ffi.new("int *", 0)
-processed_image = raw.dcraw_make_mem_image(pointer)
+processed_image = raw.dcraw_make_mem_image()
 rgb_buffer = ffi.buffer(processed_image.data, processed_image.data_size)
 
 image = Image.frombuffer(

@@ -74,6 +74,20 @@ class Raw(object):
         raw.open_file(fsencode(path))
         return raw
 
+    def dcraw_make_mem_image(self):
+        errcode = ffi.new("int *")
+        processed_image = lib.libraw_dcraw_make_mem_image(self.data, errcode)
+        if processed_image == ffi.NULL:
+            raise LibRawError.from_code(errcode[0])
+        return processed_image
+
+    def dcraw_make_mem_thumb(self):
+        errcode = ffi.new("int *")
+        processed_image = lib.libraw_dcraw_make_mem_thumb(self.data, errcode)
+        if processed_image == ffi.NULL:
+            raise LibRawError.from_code(errcode[0])
+        return processed_image
+
 
 def _wrap(fn):
     """
@@ -107,4 +121,6 @@ for name in dir(lib):
     fn = getattr(lib, name)
     if name.startswith(prefix):
         name = name[prefix_length:]
+        if hasattr(Raw, name):
+            continue
         setattr(Raw, name, _wrap(fn))
