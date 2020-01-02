@@ -79,14 +79,27 @@ class Raw(object):
         processed_image = lib.libraw_dcraw_make_mem_image(self.data, errcode)
         if processed_image == ffi.NULL:
             raise LibRawError.from_code(errcode[0])
-        return processed_image
+        return _ProcessedImage(contents=processed_image)
 
     def dcraw_make_mem_thumb(self):
         errcode = ffi.new("int *")
         processed_image = lib.libraw_dcraw_make_mem_thumb(self.data, errcode)
         if processed_image == ffi.NULL:
             raise LibRawError.from_code(errcode[0])
-        return processed_image
+        return _ProcessedImage(contents=processed_image)
+
+
+@attr.s
+class _ProcessedImage(object):
+
+    contents = attr.ib()
+
+    @property
+    def size(self):
+        return self.contents.width, self.contents.height
+
+    def buffer(self):
+        return ffi.buffer(self.contents.data, self.contents.data_size)
 
 
 def _wrap(fn):
@@ -95,7 +108,6 @@ def _wrap(fn):
 
     For functions not taking the data struct, returns the function as-is.
     """
-
     signature = ffi.typeof(fn)
     if signature.args and signature.args[0].cname == "libraw_data_t *":
         if signature.result.cname == "int":
