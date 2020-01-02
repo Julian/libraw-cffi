@@ -4,14 +4,15 @@ A reimplementation of the examples in the samples directory.
 from datetime import datetime
 from unittest import TestCase
 
-from _raw import ffi, lib
+from _raw import ffi
 from libraw_cffi.tests import RADIOHEAD, RADIOHEAD_SIZE
 import libraw_cffi
 
 
 class TestSamples(TestCase):
     def test_raw_identify(self):
-        data = libraw_cffi.from_path(RADIOHEAD)
+        raw = libraw_cffi.Raw.from_path(RADIOHEAD)
+        data = raw.data
 
         self.assertEqual(
             (
@@ -23,7 +24,7 @@ class TestSamples(TestCase):
             (b"Sony", b"ILCE-7RM3") + RADIOHEAD_SIZE,
         )
 
-        lib.libraw_adjust_sizes_info_only(data)
+        raw.adjust_sizes_info_only()
 
         self.assertEqual(
             (

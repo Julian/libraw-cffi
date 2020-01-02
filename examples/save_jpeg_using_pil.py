@@ -4,18 +4,18 @@ import sys
 
 from PIL import Image
 
-from _raw import ffi, lib
-import libraw_cffi
+from _raw import ffi
+from libraw_cffi import Raw
 
 
 src = sys.argv[1]
 dest = sys.argv[2]
 
-raw = libraw_cffi.from_path(src)
-lib.libraw_unpack(raw)
-lib.libraw_dcraw_process(raw)
+raw = Raw.from_path(src)
+raw.unpack()
+raw.dcraw_process()
 pointer = ffi.new("int *", 0)
-processed_image = lib.libraw_dcraw_make_mem_image(raw, pointer)
+processed_image = raw.dcraw_make_mem_image(pointer)
 rgb_buffer = ffi.buffer(processed_image.data, processed_image.data_size)
 
 image = Image.frombuffer(

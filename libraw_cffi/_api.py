@@ -1,7 +1,10 @@
 from contextlib import closing
+from functools import wraps
 import mmap
 import os
 import sys
+
+import attr
 
 from _raw import ffi, lib
 
@@ -31,35 +34,6 @@ class LibRawError(Exception):
         return cls(message=message, code=code)
 
 
-def from_file(file, size=None):
-    data = _data()
-    mmapped = mmap.mmap(file.fileno(), 0, mmap.MAP_PRIVATE, mmap.PROT_READ)
-    with closing(mmapped):
-        _succeed(
-            lib.libraw_open_buffer(
-                data,
-                ffi.from_buffer(mmapped),
-                mmapped.size(),
-            ),
-        )
-    return data
-
-
-def from_path(path):
-    data = _data()
-    _succeed(lib.libraw_open_file(data, fsencode(path)))
-    return data
-
-
-def _succeed(errorcode):
-    # Implement the behavior specified in
-    # https://www.libraw.org/docs/API-notes.html#errors
-    if errorcode < 0:
-        raise LibRawError.from_code(errorcode)
-    elif errorcode > 0:
-        raise OSError(errorcode, os.strerror(errorcode))
-
-
 def version():
     return ffi.string(lib.libraw_version())
 
@@ -79,3 +53,58 @@ def _data():
     if data == ffi.NULL:
         raise LibRawError(message="Null pointer returned by libraw_init")
     return ffi.gc(data, lib.libraw_close)
+
+
+@attr.s
+class Raw(object):
+
+    data = attr.ib(factory=_data)
+
+    @classmethod
+    def from_file(cls, file):
+        raw = cls()
+        mmapped = mmap.mmap(file.fileno(), 0, mmap.MAP_PRIVATE, mmap.PROT_READ)
+        with closing(mmapped):
+            raw.open_buffer(ffi.from_buffer(mmapped), mmapped.size())
+        return raw
+
+    @classmethod
+    def from_path(cls, path):
+        raw = cls()
+        raw.open_file(fsencode(path))
+        return raw
+
+
+def _wrap(fn):
+    """
+    Wrap a LibRaw function to pass the data struct and check for errors.
+
+    For functions not taking the data struct, returns the function as-is.
+    """
+
+    signature = ffi.typeof(fn)
+    if signature.args and signature.args[0].cname == "libraw_data_t *":
+        if signature.result.cname == "int":
+            # Implement the behavior specified in
+            # https://www.libraw.org/docs/API-notes.html#errors
+            def wrapper(self, *args, **kwargs):
+                errorcode = fn(self.data, *args, **kwargs)
+                if errorcode < 0:
+                    raise LibRawError.from_code(errorcode)
+                elif errorcode > 0:
+                    raise OSError(errorcode, os.strerror(errorcode))
+        else:
+            def wrapper(self, *args, **kwargs):
+                return fn(self.data, *args, **kwargs)
+        return wraps(fn)(wrapper)
+    else:
+        return fn
+
+
+prefix = "libraw_"
+prefix_length = len(prefix)
+for name in dir(lib):
+    fn = getattr(lib, name)
+    if name.startswith(prefix):
+        name = name[prefix_length:]
+        setattr(Raw, name, _wrap(fn))
