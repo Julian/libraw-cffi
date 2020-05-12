@@ -14,6 +14,14 @@ jobs:
         os: [ubuntu-latest]
         python-version: [pypy2, pypy3, 3.7, 3.8]
 
+    env:
+      CIBW_BEFORE_BUILD: >
+        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
+        cd LibRaw* &&
+        ./configure --prefix=/usr &&
+        make &&
+        make install
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
