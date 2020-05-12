@@ -21,7 +21,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: sudo apt-get install -y libraw19 libraw-dev
+      run: >
+        wget 'http://archive.ubuntu.com/ubuntu/pool/main/libr/libraw/libraw19_0.19.5-1_amd64.deb' &&
+        wget 'http://archive.ubuntu.com/ubuntu/pool/main/libr/libraw/libraw-dev_0.19.5-1_amd64.deb' &&
+        sudo dpkg -i libraw19_0.19.5-1_amd64.deb &&
+        sudo dpkg -i libraw-dev_0.19.5-1_amd64.deb
       if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install libraw
