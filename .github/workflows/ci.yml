@@ -56,7 +56,7 @@ jobs:
       run: >
         curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
         cd LibRaw* &&
-        ./configure &&
+        ./configure --prefix=/usr &&
         make &&
         sudo make install
       if: runner.os == 'Linux'
