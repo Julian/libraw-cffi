@@ -21,7 +21,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: apt install libraw19 libraw-dev
+      run: sudo apt-get install -y libraw19 libraw-dev
       if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install libraw
