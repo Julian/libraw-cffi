@@ -25,7 +25,7 @@ jobs:
         cd LibRaw* &&
         ./configure &&
         make &&
-        make install
+        sudo make install
       if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install libraw
