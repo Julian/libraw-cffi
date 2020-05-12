@@ -19,12 +19,13 @@ jobs:
       run: python -m pip install -U pip setuptools
     - name: Install tox
       run: python -m pip install tox
-    - name: Install dependencies
+    - name: Install dependencies  # GHA runs 18.04 which doesn't have libraw19
       run: >
-        wget 'http://archive.ubuntu.com/ubuntu/pool/main/libr/libraw/libraw19_0.19.5-1_amd64.deb' &&
-        wget 'http://archive.ubuntu.com/ubuntu/pool/main/libr/libraw/libraw-dev_0.19.5-1_amd64.deb' &&
-        sudo dpkg -i libraw19_0.19.5-1_amd64.deb &&
-        sudo dpkg -i libraw-dev_0.19.5-1_amd64.deb
+        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
+        cd LibRaw* &&
+        ./configure &&
+        make &&
+        make install
       if: runner.os == 'Linux'
     - name: Install dependencies
       run: brew install libraw
