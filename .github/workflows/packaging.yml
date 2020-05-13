@@ -2,16 +2,18 @@ name: Packaging
 
 on:
   push:
+  pull_request:
   release:
     types: [published]
 
 jobs:
   build:
+    name: Build packages on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
         python-version: [pypy2, pypy3, 3.7, 3.8]
 
     env:
@@ -62,8 +64,8 @@ jobs:
         name: dist-${{ matrix.os }}-${{ matrix.python-version }}
         path: dist
     - name: Publish package
+      run: python -m pip install twine && python -m twine upload dist/*
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_password }}
+      env:
+        TWINE_USER: __token__
+        TWINE_PASSWORD: ${{ secrets.pypi_password }}
