@@ -2,7 +2,6 @@ from contextlib import closing
 from functools import wraps
 import mmap
 import os
-import sys
 
 import attr
 
