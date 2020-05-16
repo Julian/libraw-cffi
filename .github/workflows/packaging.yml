@@ -16,7 +16,7 @@ jobs:
         os: [macos-latest, ubuntu-latest]
 
     env:
-      CIBW_BEFORE_BUILD: >
+      CIBW_BEFORE_BUILD_LINUX: >
         curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
         cd LibRaw* &&
         ./configure --prefix=/usr &&
