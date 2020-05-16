@@ -1,9 +1,6 @@
+from pathlib import Path
 import os
 
-try:
-    from pathlib2 import Path
-except ImportError:
-    from pathlib import Path
 
 if "RADIOHEAD" in os.environ:
     RADIOHEAD = Path(os.environ["RADIOHEAD"])

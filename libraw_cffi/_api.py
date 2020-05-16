@@ -9,14 +9,6 @@ import attr
 from _raw import ffi, lib
 
 
-PY2 = sys.version_info[0] == 2
-try:
-    fsencode = os.fsencode
-except AttributeError:
-    def fsencode(path):  # Ha ha...
-        return bytes(path)
-
-
 class LibRawError(Exception):
     def __init__(self, message, code=None):
         super(LibRawError, self).__init__(message, code)
@@ -29,9 +21,7 @@ class LibRawError(Exception):
     @classmethod
     def from_code(cls, code):
         message = ffi.string(lib.libraw_strerror(code))
-        if not PY2:
-            message = message.decode()
-        return cls(message=message, code=code)
+        return cls(message=message.decode(), code=code)
 
 
 def version():
@@ -71,7 +61,7 @@ class Raw(object):
     @classmethod
     def from_path(cls, path):
         raw = cls()
-        raw.open_file(fsencode(path))
+        raw.open_file(os.fsencode(path))
         return raw
 
     def dcraw_make_mem_image(self):
