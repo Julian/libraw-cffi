@@ -17,7 +17,7 @@ jobs:
 
     env:
       CIBW_BEFORE_BUILD_LINUX: >
-        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
+        curl 'https://www.libraw.org/data/LibRaw-0.20.0.tar.gz' | tar xzf - &&
         cd LibRaw* &&
         ./configure --prefix=/usr &&
         make &&
@@ -57,9 +57,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - name: Install dependencies  # GHA runs 18.04 which doesn't have libraw19
+    - name: Install dependencies  # GHA runs 18.04 which doesn't have libraw20
       run: >
-        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
+        curl 'https://www.libraw.org/data/LibRaw-0.20.0.tar.gz' | tar xzf - &&
         cd LibRaw* &&
         ./configure --prefix=/usr &&
         make &&

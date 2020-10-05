@@ -19,9 +19,9 @@ jobs:
       run: python -m pip install -U pip setuptools
     - name: Install tox
       run: python -m pip install tox
-    - name: Install dependencies  # GHA runs 18.04 which doesn't have libraw19
+    - name: Install dependencies  # GHA runs 18.04 which doesn't have libraw20
       run: >
-        curl 'https://www.libraw.org/data/LibRaw-0.19.5.tar.gz' | tar xzf - &&
+        curl 'https://www.libraw.org/data/LibRaw-0.20.0.tar.gz' | tar xzf - &&
         cd LibRaw* &&
         ./configure --prefix=/usr &&
         make &&
