@@ -12,4 +12,4 @@ else:
             "Run the suite from alongsie a git checkout, or set the RADIOHEAD "
             "environment variable to the path of the _DSC2164.ARW file."
         )
-RADIOHEAD_SIZE = 5216, 3464
+RADIOHEAD_SIZE = 5184, 3464

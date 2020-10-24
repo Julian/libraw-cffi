@@ -80,7 +80,7 @@ class TestSamples(TestCase):
                 data.shootinginfo.ExposureMode,
                 data.shootinginfo.ImageStabilization,
             ),
-            (-1, 3, -1, -1, -1, -1),
+            (0, 3, 0, -1, 7, 1),
         )
 
         self.assertEqual(
@@ -94,7 +94,7 @@ class TestSamples(TestCase):
                 data.lens.makernotes.LensMount,
                 data.lens.makernotes.FocalType,
             ),
-            (b"", 2, 2, 32786, b"", 1, 2, 0),
+            (b"", 2, 37, 32786, b"", 1, 37, 0),
         )
 
         self.assertEqual(
@@ -142,15 +142,15 @@ class TestSamples(TestCase):
                 data.sizes.iwidth,
                 data.sizes.iheight,
             ),
-            (1.0, 1616, 1080, 5216, 3464, 5216, 3464),
+            (1.0, 1616, 1080, 5216, 3464, 5184, 3464),
         )
 
         self.assertEqual(
             (
-                data.sizes.raw_crop.cwidth,
-                data.sizes.raw_crop.cheight,
-                data.sizes.raw_crop.cleft,
-                data.sizes.raw_crop.ctop,
+                data.sizes.raw_inset_crop.cwidth,
+                data.sizes.raw_inset_crop.cheight,
+                data.sizes.raw_inset_crop.cleft,
+                data.sizes.raw_inset_crop.ctop,
             ),
             (5168, 3448, 8, 8),
         )
@@ -194,6 +194,8 @@ class TestSamples(TestCase):
                     [2364, 1024, 1724, 1024],
                     [2220, 1024, 2344, 1024],
                     [1760, 1024, 2892, 1024],
+                    [1492, 1024, 3016, 1024],
+                    [2364, 1024, 1724, 1024],
                     [1672, 1024, 2600, 1024],
                     [2528, 1024, 1564, 1024],
                 ], [
